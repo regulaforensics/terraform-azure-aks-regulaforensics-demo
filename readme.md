@@ -4,20 +4,10 @@
 **Azure**
 - Create an **App registration** in the Azure **Active Directory**
 - Go to the **Certificates & secrets** and create **client secret** for your **App registration**
-- Place credentials to the **defaultf.tfvars**
 - With your subscription add **Contributor** role with member **App registration**
 
-### Create terraform main.tf file and pass required variables **tenant_id**, **subscription_id**, **client_id**, **client_secret** and **name** to the **defaults.tfvars**
+### Create terraform main.tf file and pass required variables **tenant_id**, **subscription_id**, **client_id**, **client_secret** and **name**
 
-***defaults.tfvars***
-```bash
-  tenant_id       = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-  subscription_id = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-  client_id       = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-  client_secret   = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-```
-
-***main.tf***
 ```hcl
 module "aks_cluster" {
   source            = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
