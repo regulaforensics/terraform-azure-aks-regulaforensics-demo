@@ -78,7 +78,7 @@ data "template_file" "faceapi_values" {
 }
 ```
 
-Finally, pass thye rendered template files to the `docreader_values/faceapi_values` variables:
+Finally, pass the rendered template files to the `docreader_values/faceapi_values` variables:
 ```
 module "aks_cluster" {
   source           = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
