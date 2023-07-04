@@ -1,12 +1,12 @@
-# This module is intended to create Azure AKS cluster and for further regulaforensics helm charts deployment
+# This module is intended to create Azure AKS cluster and for further regulaforensics Helm charts deployment
 ## Prerequisites
 
 **Azure**
-- Create an **App registration** in the Azure **Active Directory**
-- Go to the **Certificates & secrets** and create **client secret** for your **App registration**
-- With your subscription add **Contributor** role with member **App registration**
+- Create an **App registration** in the Azure **Active Directory**.
+- Go to the **Certificates & secrets** and create a **client secret** for your **App registration**.
+- With your subscription, add a **Contributor** role with a member **App registration**.
 
-### Create terraform main.tf file and pass required variables **tenant_id**, **subscription_id**, **client_id**, **client_secret** and **name**
+### Create a terraform main.tf file and pass the required variables: **tenant_id**, **subscription_id**, **client_id**, **client_secret** and **name**. 
 
 ```hcl
 module "aks_cluster" {
@@ -21,7 +21,7 @@ module "aks_cluster" {
   enable_faceapi    = true
 }
 ```
-### To access your cluster, add the following resource
+### To access your cluster, add the following resource:
 ```hcl
 resource "local_file" "kubeconfig" {
   depends_on = [module.aks_cluster]
@@ -31,7 +31,7 @@ resource "local_file" "kubeconfig" {
 ```
 This will create a kubernetes config file, to access your cluster
 
-## Add Regula license for your chart
+## Add the Regula license for your chart:
 ```hcl
 data "template_file" "docreader_license" {
   template = filebase64("${path.module}/license/docreader/regula.license")
@@ -50,7 +50,7 @@ module "aks_cluster" {
   ...
 }
 ```
-## Execute terraform template
+## Execute a terraform template:
 ```bash
   terraform init
   terraform plan
@@ -59,26 +59,26 @@ module "aks_cluster" {
 
 ## Optional. Custom Helm values
 
-### Custom values for docreader chart
-If you are about to deploy docreader Helm chart with custom values:
-- create **values.yml** in folder named by application (i.e. values/docreader/values.yml)
-- pass file location to the `template_file` of `data source` block
+### Custom values for docreader chart:
+To deploy docreader Helm chart with custom values, take the following steps:
+- create a **values.yml** in a folder named by the application (i.e. values/docreader/values.yml)
+- pass the file location to the `template_file` of `data source` block:
 ```hcl
 data "template_file" "docreader_values" {
   template = file("${path.module}/values/docreader/values.yml")
 }
 ```
 ### Custom values for faceapi chart
-If you are about to deploy faceapi Helm chart with custom values:
-- create **values.yml** in folder named by application (i.e. values/faceapi/values.yml)
-- pass file location to the `template_file` of `data source` block
+To deploy faceapi Helm chart with custom values, take the following steps:
+- create a **values.yml** in a folder named by the application (i.e. values/faceapi/values.yml)
+- pass the file location to the `template_file` of `data source` block:
 ```hcl
 data "template_file" "faceapi_values" {
   template = file("${path.module}/values/faceapi/values.yml")
 }
 ```
 
-Finally, pass rendered template files to the `docreader_values/faceapi_values` variables
+Finally, pass thye rendered template files to the `docreader_values/faceapi_values` variables:
 ```
 module "aks_cluster" {
   source           = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
@@ -117,9 +117,9 @@ module "aks_cluster" {
 | net_profile_docker_bridge_cidr    | IP address (in CIDR notation) used as the Docker bridge IP address on nodes                           | string        | 172.17.0.1/16          |
 | net_profile_service_cidr          | The Network Range used by the Kubernetes service                                                      | string        | 10.0.0.0/16            |
 | net_profile_dns_service_ip        | IP address within the Kubernetes service address range that will be used by cluster service discovery | string        | 10.0.0.10              |
-| enable_docreader                  | Deploy Docreader helm chart                                                                           | bool          | false                  |
-| docreader_values                  | Docreader helm values                                                                                 | string        | null                   |
+| enable_docreader                  | Deploy Docreader Helm chart                                                                           | bool          | false                  |
+| docreader_values                  | Docreader Helm values                                                                                 | string        | null                   |
 | docreader_license                 | Docreader Regula license file                                                                         | string        | null                   |
-| enable_faceapi                    | Deploy Faceapi helm chart                                                                             | bool          | false                  |
-| faceapi_values                    | Faceapi helm values                                                                                   | string        | null                   |
+| enable_faceapi                    | Deploy Faceapi Helm chart                                                                             | bool          | false                  |
+| faceapi_values                    | Faceapi Helm values                                                                                   | string        | null                   |
 | face_api_license                  | Faceapi Regula license file                                                                           | string        | null                   |
