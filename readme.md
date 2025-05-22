@@ -99,24 +99,18 @@ module "aks_cluster" {
 | subscription_id                   | The Subscription ID used for Azure Active Directory Application                                       | string        | null                   |
 | client_id                         | The Client ID used for Azure Active Directory Application                                             | string        | null                   |
 | client_secret                     | The Client Secret used for Azure Active Directory Application                                         | string        | null                   |
-| name                              | The name for the AKS resources created in the specified Azure Resource Group                          | string        | null                   |
+| name                              | The name for the AKS resources created in the specified Azure Resource Group                          | string        | "regula-aks-demo"      |
 | address_space                     | The address space that is used by the virtual network                                                 | list(string)  | ["10.10.0.0/16"]       |
-| subnet_prefixes                   | The address prefix to use for the subnet                                                              | list(string)  | ["10.10.32.0/19"]      |
-| subnet_names                      | A list of public subnets inside the vNet                                                              | list(string)  | ["subnet1"]            |
-| location                          | Location of cluster, if not defined it will be read from the resource-group                           | string        | North Europe           |
-| prefix                            | The prefix for the resources created in the specified Azure Resource Group                            | string        | prefix                 |
-| network_plugin                    | Network plugin to use for networking                                                                  | string        | azure                  |
-| os_disk_size_gb                   | Disk size of nodes in GBs                                                                             | number        | 50                     |
-| sku_tier                          | The SKU Tier that should be used for this Kubernetes Cluster. Possible values are `Free` and `Paid`   | string        | Free                   |
-| agents_count                      | The number of Agents that should exist in the Agent Pool                                              | number        | 2                      |
-| agents_max_pods                   | The maximum number of pods that can run on each agent                                                 | number        | 100                    |
-| agents_availability_zones         | A list of Availability Zones across which the Node Pool should be spread                              | list(string)  | ["1", "2", "3"]        |
-| agents_type                       | The type of Node Pool which should be created                                                         | string        | VirtualMachineScaleSets|
-| agents_size                       | The default virtual machine size for the Kubernetes agents                                            | string        | Standard_D4_v5         |
+| address_prefix                    | The address prefix for the subnet                                                                     | string        | "10.10.32.0/19"        |
+| aks_subnet_name                   | A list of public subnets inside the vNet                                                              | string        | "aks-subnet"           |
+| location                          | Location of cluster, if not defined it will be read from the resource-group                           | string        | "northeurope"          |
+| os_disk_size_gb                   | Disk size of nodes in GBs                                                                             | number        | 30                     |
+| sku_tier                          | The SKU Tier that should be used for this Kubernetes Cluster. Possible values are `Free` and `Paid`   | string        | "Free"                 |
+| agents_availability_zones         | A list of Availability Zones across which the Node Pool should be spread                              | list(string)  | null                   |
+| agents_size                       | The default virtual machine size for the Kubernetes agents                                            | string        | "Standard_D2_v5"       |
+| agents_min_count                  | Minimum number of nodes in a pool                                                                     | number        | 1                      |
+| agents_max_count                  | Maximum number of nodes in a pool                                                                     | number        | 2                      |
 | api_server_authorized_ip_ranges   | The IP ranges to allow for incoming traffic to the server nodes                                       | set(string)   | ["0.0.0.0/0"]          |
-| net_profile_docker_bridge_cidr    | IP address (in CIDR notation) used as the Docker bridge IP address on nodes                           | string        | 172.17.0.1/16          |
-| net_profile_service_cidr          | The Network Range used by the Kubernetes service                                                      | string        | 10.0.0.0/16            |
-| net_profile_dns_service_ip        | IP address within the Kubernetes service address range that will be used by cluster service discovery | string        | 10.0.0.10              |
 | enable_docreader                  | Deploy Docreader Helm chart                                                                           | bool          | false                  |
 | docreader_values                  | Docreader Helm values                                                                                 | string        | null                   |
 | docreader_license                 | Docreader Regula license file                                                                         | string        | null                   |

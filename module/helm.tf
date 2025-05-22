@@ -39,7 +39,7 @@ resource "helm_release" "docreader" {
 resource "kubernetes_secret" "face_api_license" {
   count = var.enable_faceapi == true ? 1 : 0
   metadata {
-    name = "face-api-license"
+    name = "faceapi-license"
   }
   type = "Opaque"
   binary_data = {
