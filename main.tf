@@ -1,5 +1,5 @@
 module "aks_cluster" {
-  source                          = "./module"
+  source                          = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
   subscription_id                 = var.subscription_id
   name                            = var.name
   address_space                   = var.address_space
