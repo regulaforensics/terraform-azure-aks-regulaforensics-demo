@@ -7,6 +7,9 @@ Terraform module to provision an Azure AKS cluster with managed ingress, ready f
 - Terraform >= 1.14
 - Azure CLI authenticated (`az login`)
 - Helm 3
+- Azure RBAC: the authenticated identity needs the following roles on the target subscription:
+  - **Contributor** — create/manage resource groups, AKS, VNet, and related resources
+  - **Role Based Access Control Administrator** or **User Access Administrator** — assign the managed identity roles that AKS requires (e.g. Network Contributor on the subnet)
 - regula.license file (https://docs.regulaforensics.com/develop/doc-reader-sdk/overview/licensing/#trial-license)
 
 ## 1. Deploy the AKS Cluster
