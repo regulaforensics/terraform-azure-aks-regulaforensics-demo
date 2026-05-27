@@ -1,119 +1,138 @@
-# This module is intended to create Azure AKS cluster and for further regulaforensics Helm charts deployment
+# Azure AKS + Regula Forensics
+
+Terraform module to provision an Azure AKS cluster with ingress support, ready for [Regula Forensics](https://regulaforensics.com/) product deployment (`docreader` and `face-api`).
+
 ## Prerequisites
 
-**Azure**
-- Create an **App registration** in the Azure **Active Directory**.
-- Go to the **Certificates & secrets** and create a **client secret** for your **App registration**.
-- With your subscription, add a **Contributor** role with a member **App registration**.
+- Terraform >= 1.14
+- Azure CLI authenticated (`az login`)
 
-### Create a terraform main.tf file and pass the required variables: **tenant_id**, **subscription_id**, **client_id**, **client_secret** and **name**. 
+## 1. Deploy the AKS Cluster
 
 ```hcl
 module "aks_cluster" {
-  source            = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
-  name              = var.name
-  tenant_id         = var.tenant_id
-  subscription_id   = var.subscription_id
-  client_id         = var.client_id
-  client_secret     = var.client_secret
-  location          = var.location
-  enable_docreader  = true
-  enable_faceapi    = true
+  source          = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
+  subscription_id = "your-subscription-id"
+  name            = "regula-aks-demo"
+  location        = "northeurope"
 }
 ```
-### To access your cluster, add the following resource:
-```hcl
-resource "local_file" "kubeconfig" {
-  depends_on = [module.aks_cluster]
-  filename   = "${path.module}/kubeconfig"
-  content    = module.aks_cluster.config
-}
-```
-This will create a kubernetes config file, to access your cluster
 
-## Add the Regula license for your chart:
-```hcl
-data "template_file" "docreader_license" {
-  template = filebase64("${path.module}/license/docreader/regula.license")
-}
-```
-```hcl
-data "template_file" "face_api_license" {
-  template = filebase64("${path.module}/license/faceapi/regula.license")
-}
-```
-```hcl
-module "aks_cluster" {
-  ...
-  docreader_license  = data.template_file.docreader_license.rendered
-  face_api_license   = data.template_file.face_api_license.rendered
-  ...
-}
-```
-## Execute a terraform template:
 ```bash
-  terraform init
-  terraform plan
-  terraform apply
+terraform init
+terraform plan
+terraform apply
 ```
 
-## Optional. Custom Helm values
+## 2. Get AKS Credentials
 
-### Custom values for docreader chart:
-To deploy docreader Helm chart with custom values, take the following steps:
-- create a **values.yml** in a folder named by the application (i.e. values/docreader/values.yml)
-- pass the file location to the `template_file` of `data source` block:
-```hcl
-data "template_file" "docreader_values" {
-  template = file("${path.module}/values/docreader/values.yml")
-}
-```
-### Custom values for faceapi chart
-To deploy faceapi Helm chart with custom values, take the following steps:
-- create a **values.yml** in a folder named by the application (i.e. values/faceapi/values.yml)
-- pass the file location to the `template_file` of `data source` block:
-```hcl
-data "template_file" "faceapi_values" {
-  template = file("${path.module}/values/faceapi/values.yml")
-}
+```bash
+az aks get-credentials \
+  --resource-group regula-aks-demo \
+  --name regula-aks-demo
 ```
 
-Finally, pass the rendered template files to the `docreader_values/faceapi_values` variables:
-```
-module "aks_cluster" {
-  source           = "github.com/regulaforensics/terraform-azure-regulaforensics-demo"
-  enable_docreader = true
-  enable_faceapi   = true
-  docreader_values = data.template_file.docreader_values.rendered
-  faceapi_values   = data.template_file.faceapi_values.rendered
-  ...
-}
+Verify access:
+
+```bash
+kubectl get nodes
 ```
 
+## 3. Deploy Product
 
+### 3.1 Docreader
 
-## **Inputs**
-| Name                              | Description                                                                                           | Type          |Default                 |
-| ----------------------------------|-------------------------------------------------------------------------------------------------------|---------------|------------------------|
-| tenant_id                         | The Tenant ID used for Azure Active Directory Application                                             | string        | null                   |
-| subscription_id                   | The Subscription ID used for Azure Active Directory Application                                       | string        | null                   |
-| client_id                         | The Client ID used for Azure Active Directory Application                                             | string        | null                   |
-| client_secret                     | The Client Secret used for Azure Active Directory Application                                         | string        | null                   |
-| name                              | The name for the AKS resources created in the specified Azure Resource Group                          | string        | "regula-aks-demo"      |
-| address_space                     | The address space that is used by the virtual network                                                 | list(string)  | ["10.10.0.0/16"]       |
-| address_prefix                    | The address prefix for the subnet                                                                     | string        | "10.10.32.0/19"        |
-| aks_subnet_name                   | A list of public subnets inside the vNet                                                              | string        | "aks-subnet"           |
-| location                          | Location of cluster, if not defined it will be read from the resource-group                           | string        | "northeurope"          |
-| os_disk_size_gb                   | Disk size of nodes in GBs                                                                             | number        | 30                     |
-| sku_tier                          | The SKU Tier that should be used for this Kubernetes Cluster. Possible values are `Free` and `Paid`   | string        | "Free"                 |
-| agents_availability_zones         | A list of Availability Zones across which the Node Pool should be spread                              | list(string)  | null                   |
-| agents_size                       | The default virtual machine size for the Kubernetes agents                                            | string        | "Standard_D2_v5"       |
-| agents_min_count                  | Minimum number of nodes in a pool                                                                     | number        | 1                      |
-| agents_max_count                  | Maximum number of nodes in a pool                                                                     | number        | 2                      |
-| api_server_authorized_ip_ranges   | The IP ranges to allow for incoming traffic to the server nodes                                       | set(string)   | ["0.0.0.0/0"]          |
-| enable_docreader                  | Deploy Docreader Helm chart                                                                           | bool          | false                  |
-| docreader_values                  | Docreader Helm values                                                                                 | string        | null                   |
-| docreader_license                 | Docreader Regula license file                                                                         | string        | null                   |
-| enable_faceapi                    | Deploy Faceapi Helm chart                                                                             | bool          | false                  |
-| faceapi_values                    | Faceapi Helm values                                                                                   | string        | null                   |
-| face_api_license                  | Faceapi Regula license file                                                                           | string        | null                   |
+```bash
+# Create namespace
+kubectl create namespace docreader
+
+# Create license secret
+kubectl create secret generic docreader-license \
+  --namespace docreader \
+  --from-file=regula.license=./license/docreader/regula.license
+
+# Add Regula Helm repo
+helm repo add regulaforensics https://regulaforensics.github.io/helm-charts
+helm repo update
+
+# Install docreader
+helm install docreader regulaforensics/docreader \
+  --namespace docreader \
+  --set ingress.enabled=true \
+  --set ingress.className=webapprouting.kubernetes.azure.com \
+  --set ingress.hosts[0].host=docreader.example.com \
+  --set ingress.hosts[0].paths[0].path=/ \
+  --set ingress.hosts[0].paths[0].pathType=Prefix
+```
+
+Or with a custom values file:
+
+```bash
+helm install docreader regulaforensics/docreader \
+  --namespace docreader \
+  -f values/docreader/values.yaml
+```
+
+### 3.2 Deploy Face API
+
+```bash
+# Create namespace
+kubectl create namespace faceapi
+
+# Create license secret
+kubectl create secret generic faceapi-license \
+  --namespace faceapi \
+  --from-file=regula.license=./license/faceapi/regula.license
+
+# Install face-api
+helm install faceapi regulaforensics/faceapi \
+  --namespace faceapi \
+  --set ingress.enabled=true \
+  --set ingress.className=webapprouting.kubernetes.azure.com \
+  --set ingress.hosts[0].host=faceapi.example.com \
+  --set ingress.hosts[0].paths[0].path=/ \
+  --set ingress.hosts[0].paths[0].pathType=Prefix
+```
+
+Or with a custom values file:
+
+```bash
+helm install faceapi regulaforensics/faceapi \
+  --namespace faceapi \
+  -f values/faceapi/values.yaml
+```
+
+## 4. Get Ingress IP
+
+After deployment, get the external IP to point your DNS records:
+
+```bash
+kubectl get svc -n app-routing-system
+```
+
+Point your DNS A records (`docreader.example.com`, `faceapi.example.com`) to the `EXTERNAL-IP`.
+
+## Terraform Inputs
+
+| Name | Description | Type | Default |
+|------|-------------|------|---------|
+| `subscription_id` | Azure subscription ID | `string` | — |
+| `name` | Name for AKS resources and resource group | `string` | `"regula-aks-demo"` |
+| `location` | Azure region | `string` | `"northeurope"` |
+| `address_space` | VNet address space | `list(string)` | `["10.10.0.0/16"]` |
+| `address_prefix` | AKS subnet prefix | `string` | `"10.10.32.0/19"` |
+| `aks_subnet_name` | Subnet name | `string` | `"aks-subnet"` |
+| `sku_tier` | AKS SKU tier: `Free`, `Standard`, `Premium` | `string` | `"Free"` |
+| `agents_size` | VM size for nodes | `string` | `"Standard_D2_v5"` |
+| `os_disk_size_gb` | Node OS disk size | `number` | `30` |
+| `agents_min_count` | Min nodes (autoscaler) | `number` | `1` |
+| `agents_max_count` | Max nodes (autoscaler) | `number` | `2` |
+| `agents_availability_zones` | AZ spread for nodes | `list(string)` | `null` |
+| `api_server_authorized_ip_ranges` | Allowed CIDRs for API server | `list(string)` | `["0.0.0.0/0"]` |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| `cluster_name` | Resource group / cluster name |
+| `config` | Kubeconfig YAML (sensitive) |

@@ -1,9 +1,6 @@
 module "aks_cluster" {
   source                          = "./module"
-  tenant_id                       = var.tenant_id
   subscription_id                 = var.subscription_id
-  client_id                       = var.client_id
-  client_secret                   = var.client_secret
   name                            = var.name
   address_space                   = var.address_space
   address_prefix                  = var.address_prefix
@@ -16,10 +13,4 @@ module "aks_cluster" {
   agents_max_count                = var.agents_max_count
   agents_availability_zones       = var.agents_availability_zones
   api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
-  enable_docreader                = var.enable_docreader
-  docreader_values                = var.docreader_values
-  docreader_license               = var.docreader_license
-  enable_faceapi                  = var.enable_faceapi
-  faceapi_values                  = var.faceapi_values
-  face_api_license                = var.face_api_license
 }
