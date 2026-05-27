@@ -3,7 +3,7 @@ output "resource_group_name" {
 }
 
 output "config" {
-  description = "Cluster config"
-  value       = module.aks.kube_config_raw
+  description = "Cluster kubeconfig (YAML)"
+  value       = module.aks.kube_config
   sensitive   = true
 }
