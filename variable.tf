@@ -30,7 +30,7 @@ variable "aks_subnet_name" {
 variable "location" {
   type        = string
   description = "Azure region for all resources"
-  default     = "northeurope"
+  default     = "westeurope"
 }
 
 variable "os_disk_size_gb" {

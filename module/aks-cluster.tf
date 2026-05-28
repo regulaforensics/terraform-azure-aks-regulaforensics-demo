@@ -37,6 +37,16 @@ module "aks" {
     system_assigned = true
   }
 
+  oidc_issuer_profile = {
+    enabled = true
+  }
+
+  security_profile = {
+    workload_identity = {
+      enabled = true
+    }
+  }
+
   ingress_profile = {
     web_app_routing = {
       enabled = true
