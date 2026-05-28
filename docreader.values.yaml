@@ -1,0 +1,28 @@
+licenseSecretName: docreader-license
+
+commonLabels:
+  azure.workload.identity/use: "true"
+
+config:
+  service:
+    storage:
+      type: az
+
+serviceAccount:
+  create: true
+  name: docreader-sa
+
+ingress:
+  enabled: true
+  className: webapprouting.kubernetes.azure.com
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - docreader.example.com
+  paths:
+    - /
+  pathType: Prefix
+  # tls:
+  #   - secretName: docreader-tls
+  #     hosts:
+  #       - docreader.example.com

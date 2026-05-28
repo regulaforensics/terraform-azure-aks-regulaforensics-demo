@@ -1,0 +1,36 @@
+licenseSecretName: faceapi-license
+
+commonLabels:
+  azure.workload.identity/use: "true"
+
+config:
+  service:
+    storage:
+      type: az
+
+    database:
+      passwordlessAuth:
+        enabled: true
+        type: "az"
+
+    liveness:
+      enabled: true
+
+serviceAccount:
+  create: true
+  name: faceapi-sa
+
+ingress:
+  enabled: true
+  className: webapprouting.kubernetes.azure.com
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - faceapi.example.com
+  paths:
+    - /
+  pathType: Prefix
+  # tls:
+  #   - secretName: faceapi-tls
+  #     hosts:
+  #       - faceapi.example.com
