@@ -71,7 +71,7 @@ variable "agents_availability_zones" {
 variable "agents_size" {
   type        = string
   description = "VM size for the Kubernetes agent nodes"
-  default     = "Standard_D2_v5"
+  default     = "Standard_D2ds_v6"
 }
 
 variable "api_server_authorized_ip_ranges" {

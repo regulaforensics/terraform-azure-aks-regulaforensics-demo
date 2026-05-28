@@ -112,7 +112,7 @@ Point your DNS A records (`docreader.example.com`, `faceapi.example.com`) to the
 | `address_prefix` | AKS subnet prefix | `string` | `"10.10.32.0/19"` |
 | `aks_subnet_name` | Subnet name | `string` | `"aks-subnet"` |
 | `sku_tier` | AKS SKU tier: `Free`, `Standard`, `Premium` | `string` | `"Free"` |
-| `agents_size` | VM size for nodes | `string` | `"Standard_D2_v5"` |
+| `agents_size` | VM size for nodes | `string` | `"Standard_D2ds_v6"` |
 | `os_disk_size_gb` | Node OS disk size | `number` | `30` |
 | `agents_min_count` | Min nodes (autoscaler) | `number` | `1` |
 | `agents_max_count` | Max nodes (autoscaler) | `number` | `2` |
