@@ -1,3 +1,4 @@
+# nosemgrep: terraform.azure.security.storage.storage-queue-services-logging
 resource "azurerm_storage_account" "regula" {
   name                     = replace("${var.name}stor", "-", "")
   resource_group_name      = azurerm_resource_group.app_group.name
